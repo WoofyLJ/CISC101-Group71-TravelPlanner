@@ -1,3 +1,5 @@
+### **Module 2 — Plan Builder (Options → Days)**
+
 Create a short list of candidate activities (e.g., attractions, restaurants, parks).  
 Each activity includes type, estimated duration, cost range, and distance.
 
