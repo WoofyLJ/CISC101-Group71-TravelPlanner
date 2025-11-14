@@ -1,7 +1,11 @@
-- Destination, Paris
-- Dates, Monday Nov 17 2025 - Wednesday Nov 19 2025
-- Number of travelers, 1
-- Budget style, mid-range
-- Interest, culture
-- Preferred pace, balanced
-- Key constraints, weather
+Collect essential details:
+
+- Destination(s)
+- Dates or trip length
+- Number of travelers
+- Budget style (affordable, mid-range, luxury)
+- Interests (food, culture, nature, etc.)
+- Preferred pace (relaxed, balanced, fast)
+- Key constraints (mobility, weather, diet)
+
+Normalize details (e.g., dates, season) and store them in a simple JSON internally.
