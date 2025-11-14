@@ -1,0 +1,7 @@
+- Destination(s)
+- Dates or trip length
+- Number of travelers
+- Budget style (affordable, mid-range, luxury)
+- Interests (food, culture, nature, etc.)
+- Preferred pace (relaxed, balanced, fast)
+- Key constraints (mobility, weather, diet)
