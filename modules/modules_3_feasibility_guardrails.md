@@ -1,3 +1,5 @@
+### **Module 3 — Feasibility & Guardrails**
+
 Apply these **if/else** checks to make sure plans are realistic and adapt to edge cases:
 
 1. **Closed Venue**
