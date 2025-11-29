@@ -1,110 +1,145 @@
-### **Module 2 — Plan Builder (Options → Days)**
+Change Log (2025-11-29): Added summary_level modes ("short" vs "detailed") and conditional behavior for how each section is summarized.
 
-Create a short list of candidate activities (e.g., attractions, restaurants, parks).  
-Each activity includes type, estimated duration, cost range, and distance.
-Module 2 — Plan Builder (Options → Days)
+Module 2 — Section Loop (Paper → Summaries)
+
 Inputs Required
-Lodging location (coordinates or address)
 
-Use a simple loop to build days:
-Travel dates
+Normalized section list from Module 1 (ordered)
 
-for each day:  
-    pick Morning activity (near lodging)  
-    pick Midday activity (close by)  
-    pick Afternoon activity (different theme)  
-    pick Evening restaurant or optional event
-Daily budget range
+Full paper text or pre-split section texts
 
-User preferences (themes, cuisine, must-see items)
+Audience type (expert, mixed, lay)
 
-Mobility constraints (walking distance, transit limits, accessibility needs)
+summary_level setting:
 
-Weather conditions or forecast
+"short" → 1–2 sentence summary per section
 
-Activity Format (consistent schema)
-Each candidate activity includes:
+"detailed" → short paragraph plus 3–5 bullet points per section
 
-Name
+Any section-specific instructions (e.g., skip, emphasize equations, focus on results)
 
-Type (attraction, restaurant, park, event)
+Section Format 
 
-Theme tags (e.g., cultural, outdoor, food)
+Each section object includes:
 
-Location/coordinates
+Section name (e.g., “Abstract”, “Introduction”, “Method”, “Results”)
 
-Estimated duration
+Section type tag (intro, method, result, discussion, conclusion, appendix)
 
-Cost range (per person)
+Raw section text
 
-Distance/travel time from lodging or previous activity
+Word count
 
-Opening hours
+Location (page range or index)
 
-Accessibility/booking notes
+Links to key items (figures, tables, equations) if available
 
-Weather dependency (indoor/outdoor)
+Flags from Module 1 (missing / empty / very short / candidate for chunking)
 
-Day-Building Loop
-For each day:
+Section-Summarizing Loop
 
-Morning activity
+Use a simple loop to process sections:
 
-Select within proximity threshold of lodging
+for each section in normalized list:
+    load section text and metadata
+    apply guardrails and summary rules
 
-Must align with opening hours
+For each section:
 
-Prefer indoor or weather-robust option
+1. Pre-checks
 
-Midday activity
+Compute or confirm word count.
 
-Choose close to morning activity (routing time ≤ threshold)
+If section is missing or empty → mark for warning and pass to Module 3.
 
-Include lunch slot if applicable
+If section length < 50 words → mark as “very short” and pass to Module 3.
 
-Check cumulative cost and time fit
+If section is very long → mark as “needs chunking” (Module 3 handles details).
 
-Afternoon activity
+2. Generate summary based on summary_level
 
-Enforce different primary theme from earlier activities
+If summary_level = "short":
 
-Validate open hours and add rest buffer if needed
+Produce a compact 1–2 sentence summary.
 
-Evening restaurant or optional event
+Focus on the main purpose and most important contribution of the section.
 
-Near afternoon activity
+Do not generate a bullet list.
 
-Respect cuisine preferences and budget
+If summary_level = "detailed":
 
-Provide fallback option if booking/weather issues arise
+Produce a short paragraph (3–5 sentences) that explains:
+
+the role of the section in the paper,
+
+key methods or arguments, and
+
+the main findings or claims.
+
+Then produce a bullet list of 3–5 key points, such as:
+
+important definitions,
+
+core equations or models (described in words),
+
+critical experimental details,
+
+main quantitative or qualitative results.
+
+3. Evidence and safety hooks
+
+Summaries must only use information found in the section text (or its approved chunks).
+
+If the section does not provide enough information to satisfy the current summary_level, add a note for Module 3 (e.g., “insufficient detail for detailed summary”).
+
+Hand off any missing/empty/short flags to Module 3 so it can attach standardized warnings.
 
 Validation & Feasibility Checks
-Opening hours overlap with planned time blocks
 
-Travel time between activities within thresholds
+For each section summary:
 
-Total day length ≤ 8–10 hours including transit
+Confirm that the summary length matches the selected summary_level:
 
-Daily cost range fits user budget
+"short" → 1–2 sentences, no bullets.
 
-Backtrack and reseat choices if plan invalid
+"detailed" → short paragraph plus 3–5 bullets.
+
+Check that no claims, results, or equations appear that are not supported by the section text.
+
+Ensure that any sections marked missing or very short have corresponding warning notes ready for Module 3.
+
+Mark sections that required chunking so Module 3 can verify evidence and coverage.
 
 Robustness Rules
-Bad weather: Swap outdoor activities for indoor alternatives while maintaining theme diversity
 
-Tight budgets: Prioritize free/low-cost options (parks, walks, casual dining)
+Long sections:
 
-Few options available: Relax non-critical constraints (distance, duration) one at a time, but never violate hard constraints (budget, open hours)
+Split into smaller text chunks if needed (based on token/word limits).
 
-Mobility constraints: Adjust proximity thresholds and avoid inaccessible routes
+Summarize each chunk, then merge into a single section-level summary that still respects summary_level.
 
-Overbooking prevention: Insert downtime slots if cumulative duration exceeds comfort threshold
+Ambiguous or combined sections (e.g., “Results and Discussion”):
+
+Treat as a single section but make sure key results and interpretations are both represented in the summary.
+
+Repeated content:
+
+Avoid copying identical text across sections; reuse ideas but keep wording fresh.
 
 Output Format
-Each day is presented as:
 
-Morning / Midday / Afternoon / Evening blocks
+For each section, output a structured record that includes:
 
-For each activity: name, type, theme tags, duration, open hours, cost range, travel time, and one-line note (e.g., booking required, weather contingency)
+Section name and type
 
-Daily summary: total estimated cost range, total travel time, and contingency notes
+summary_level used ("short" or "detailed")
+
+Section summary text (sentences or paragraph)
+
+Bullet list of 3–5 points only if summary_level = "detailed"
+
+Any flags from guardrails (e.g., missing, very short, chunked)
+
+Notes for downstream modules (e.g., “warning: limited evidence”, “chunked summary combined”)
+
+This structured per-section output is passed to Module 3 (Guardrails) and Module 4 (Rendering & Refinement) for final checks and formatting.
