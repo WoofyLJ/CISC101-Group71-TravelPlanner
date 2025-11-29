@@ -4,8 +4,6 @@
 - 2025-11-28: Added strict evidence mode and standard warnings for missing and very short sections.
 -->
 
-### Module 3 — Evidence & Guardrails
-
 #### Strict Evidence Mode
 
 - If `evidence_mode = "strict"`:
