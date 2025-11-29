@@ -1,35 +1,53 @@
 ### **Module 3 — Feasibility & Guardrails**
 
-Apply these **if/else** checks to make sure plans are realistic and adapt to edge cases:
+<!-- Change Log:
+- 2025-11-28: Added strict evidence mode and standard warnings for missing and very short sections.
+-->
 
-1. **Closed Venue**
-   
-   - If a museum or park is closed on that day → suggest a similar indoor option nearby.
+### Module 3 — Evidence & Guardrails
 
-2. **Over-Budget Meal**
-   
-   - If meal cost > user’s budget → switch to a cheaper restaurant of similar cuisine.
+#### Strict Evidence Mode
 
-3. **Too Far or Long Travel**
-   
-   - If transfer between activities > 25 min or > 5 km → pick a closer alternative or add a short transit hop.
+- If `evidence_mode = "strict"`:
+  - Only use information that is actually written in the section text.
+  - Do not add outside facts, examples, or guesses.
+- If a sentence or bullet does not clearly come from the section:
+  - Remove it or rewrite it so it matches the text.
+- If there is not enough information to summarize the section:
+  - Replace the summary with:
+    - `The source text does not provide enough detail to summarize this section in strict evidence mode.`
 
-4. **Weather Swap**
-   
-   - If rain or cold season likely → make sure at least one indoor activity replaces outdoor ones.
+#### Missing or Empty Section
 
-5. **Time Overrun**
-   
-   - If total planned time > available hours → shorten lunch or pick a nearer stop.
+- If the section text is missing or basically empty:
+  - Do not write a summary or key points.
+  - Return:
+    - `summary_text = ""`
+    - `key_points = []`
+  - Add this warning:
+    - `Section skipped: no usable text was provided.`
 
-6. **Mobility Needs**
-   
-   - If mobility limits noted → choose step-free, short-walk options and include breaks.
+#### Very Short Section (< 50 words)
 
-7. **Dietary Needs**
-   
-   - If user is vegan or has dietary constraints → ensure all meals match or swap with compliant ones.
+- If the section has text but fewer than 50 words:
+  - Allow a short summary, but keep it simple and careful.
+  - Add this warning:
+    - `Section very short: summary may be incomplete.`
 
-8. **Bookings**
-   
-   - If activity usually needs a ticket → just remind the user to book it; never simulate bookings.
+#### General Hallucination Checks (All Modes)
+
+- Do not:
+  - Invent new results, experiments, or datasets.
+  - Make up numbers, equations, author names, or years.
+- If unsure whether something is in the text:
+  - Leave it out.
+
+#### What This Module Returns
+
+For each section, pass back to Module 2:
+- Whether the section is missing/empty.
+- Whether the section is very short.
+- Any warning messages (for example:
+  - `Section skipped: no usable text was provided.`
+  - `Section very short: summary may be incomplete.`
+  - `The source text does not provide enough detail to summarize this section in strict evidence mode.`)
